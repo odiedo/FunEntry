@@ -1,0 +1,58 @@
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 16,
+  },
+  header: {
+    marginBottom: 50,
+  },
+  headerText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#0F6EFF',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: '#0F6EFF',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#0F6EFF',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+    width: '100%',
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+  },
+  button: {
+    backgroundColor: '#0F6EFF',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  signupText: {
+    marginTop: 20,
+    color: '#0F6EFF',
+  },
+});
