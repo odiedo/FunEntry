@@ -1,44 +1,71 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const LoginScreen = () => {
+
+const SignupScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Fun Entry</Text>
+        <Text style={styles.headerText}>{"\n"}Fun {"\n"}Entry</Text>
       </View>
       <View style={styles.loginContainer}>
-        <Text style={styles.loginText}>Login</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            keyboardType="email-address"
-            placeholderTextColor="#6a6a6a"
-          />
-          <Image
-            source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/new-post.png' }}
-            style={styles.icon}
-          />
+        <Text style={styles.loginText}>Signup</Text>
+        <View style={styles.fieldset}>
+          <Text style={styles.legend}>Name</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="odiedo paul"
+              placeholderTextColor="#6a6a6a"
+            />
+            <Image
+              source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/new-post.png' }}
+              style={styles.icon}
+            />
+          </View>
         </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            secureTextEntry
-            placeholderTextColor="#6a6a6a"
-          />
-          <Image
-            source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/lock-2.png' }}
-            style={styles.icon}
-          />
+        <View style={styles.fieldset}>
+          <Text style={styles.legend}>Email</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="odiedo@gmail.com"
+              keyboardType="email-address"
+              placeholderTextColor="#6a6a6a"
+            />
+            <Image
+              source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/new-post.png' }}
+              style={styles.icon}
+            />
+          </View>
+        </View>
+        <View style={styles.fieldset}>
+          <Text style={styles.legend}>Password</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              secureTextEntry
+              placeholderTextColor="#6a6a6a"
+            />
+            <Image
+              source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/lock-2.png' }}
+              style={styles.icon}
+            />
+          </View>
         </View>
         <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>login</Text>
+          <Text style={styles.loginButtonText} >signup</Text>
         </TouchableOpacity>
         <Text style={styles.signupText}>
-          Not have account? {"\n"}  <Text style={styles.signupLink}>Signup here</Text>
+          Already have an account? {"\n"}  
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.signupLink}>Login here</Text>
+          </TouchableOpacity>
         </Text>
+        <View style={styles.bottomCom}>
+
+        </View>
       </View>
     </View>
   );
@@ -54,21 +81,22 @@ const styles = StyleSheet.create({
   header: {
     position: 'absolute',
     top: 0,
-    left:0,
-    width: '80%',
-    height: '40%',
+    left: -30,
+    width: '60%',
+    height: '30%',
     backgroundColor: '#4A90E2',
-    borderBottomLeftRadius: 100,
-    borderBottomRightRadius:100,
-    borderTopRightRadius: 200,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 100,
+    borderTopRightRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerText: {
     color: '#FFFFFF',
-    fontSize: 36,
+    fontSize: 26,
     fontWeight: 'bold',
     width: '50%',
+    paddingLeft: 30,
   },
   loginContainer: {
     width: '80%',
@@ -78,20 +106,37 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 24,
     color: '#333333',
+    fontWeight: '900',
     marginBottom: 20,
+  },
+  fieldset: {
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#4A90E2',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  legend: {
+    position: 'absolute',
+    top: -10,
+    left: 10,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 5,
+    fontSize: 16,
+    color: '#4A90E2',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#4A90E2',
-    borderRadius: 10,
-    marginBottom: 20,
-    paddingHorizontal: 10,
+    paddingTop: 1,
+    width: '100%',
   },
   input: {
     flex: 1,
-    height: 40,
+    height: 50,
+    width: '90%',
+    padding: 0,
     color: '#333333',
   },
   icon: {
@@ -120,4 +165,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default SignupScreen;

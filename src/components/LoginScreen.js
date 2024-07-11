@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const LoginScreen = () => {
+
+const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Fun Entry</Text>
+        <Text style={styles.headerText}>{"\n"}Fun {"\n"}Entry</Text>
       </View>
       <View style={styles.loginContainer}>
         <Text style={styles.loginText}>Login</Text>
@@ -40,10 +41,13 @@ const LoginScreen = () => {
           </View>
         </View>
         <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>login</Text>
+          <Text style={styles.loginButtonText} >login</Text>
         </TouchableOpacity>
         <Text style={styles.signupText}>
-          Not have account? {"\n"}  <Text style={styles.signupLink}>Signup here</Text>
+          Not have account? {"\n"}  
+          <TouchableOpacity onPress={() => navigation.navigate('Signup')} >
+            <Text style={styles.signupLink}>Signup here</Text>
+          </TouchableOpacity>
         </Text>
       </View>
     </View>
@@ -64,15 +68,15 @@ const styles = StyleSheet.create({
     width: '70%',
     height: '30%',
     backgroundColor: '#4A90E2',
-    borderBottomLeftRadius: 70,
-    borderBottomRightRadius: 70,
-    borderTopRightRadius: 200,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 100,
+    borderTopRightRadius: 60,
     alignItems: 'center',
     justifyContent: 'center',
   },
   headerText: {
     color: '#FFFFFF',
-    fontSize: 40,
+    fontSize: 36,
     fontWeight: 'bold',
     width: '50%',
   },
