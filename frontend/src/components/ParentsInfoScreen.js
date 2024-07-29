@@ -163,7 +163,7 @@ const ParentsInfoScreen = ({ navigation }) => {
                         <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="07125221182"
+                                placeholder="0712022132"
                                 placeholderTextColor="lightgrey"
                                 keyboardType="phone-pad"
                             />
@@ -175,7 +175,7 @@ const ParentsInfoScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Student')}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.nextButton}>
+                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('FinalInfo')}>
                     <Text style={styles.nextButtonText}>Next</Text>
                 </TouchableOpacity>
             </View>

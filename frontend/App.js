@@ -8,6 +8,7 @@ import SignupScreen from './src/components/SignupScreen';
 import HomeScreen from './src/components/HomeScreen';
 import StudentScreen from './src/components/StudentScreen';
 import ParentsInfoScreen from './src/components/ParentsInfoScreen';
+import FinalInfoScreen from './src/components/FinalInfoScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +18,7 @@ export default function App() {
     <>
         <StatusBar 
             barStyle="light-content"
-            backgroundColor="#000"
+            backgroundColor="#4A90E2"
         />    
         <NavigationContainer>
             <Stack.Navigator initialRouteNames="Splash">
@@ -27,6 +28,7 @@ export default function App() {
               <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
               <Stack.Screen name="Student" component={StudentScreen} options={{ headerShown: false }} />
               <Stack.Screen name="ParentsInfo" component={ParentsInfoScreen} options={{ headerShown: false }}/>
+              <Stack.Screen name="FinalInfo" component={FinalInfoScreen} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     </>
