@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import api from './api';  // Ensure the path is correct
 
 
 const SignupScreen = ({ navigation }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignup = async () => {
+    try {
+      await api.post('/signup', { name, email, password });
+      alert('User created!');
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error(error);
+      alert('Error creating user.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -17,6 +33,8 @@ const SignupScreen = ({ navigation }) => {
               style={styles.input}
               placeholder="odiedo paul"
               placeholderTextColor="#6a6a6a"
+              value={name}
+              onChangeText={setName}
             />
             <Image
               source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/new-post.png' }}
@@ -32,6 +50,8 @@ const SignupScreen = ({ navigation }) => {
               placeholder="odiedo@gmail.com"
               keyboardType="email-address"
               placeholderTextColor="#6a6a6a"
+              value={email}
+              onChangeText={setEmail}
             />
             <Image
               source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/new-post.png' }}
@@ -47,6 +67,8 @@ const SignupScreen = ({ navigation }) => {
               placeholder="Password"
               secureTextEntry
               placeholderTextColor="#6a6a6a"
+              value={password}
+              onChangeText={setPassword}
             />
             <Image
               source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/lock-2.png' }}
@@ -54,8 +76,8 @@ const SignupScreen = ({ navigation }) => {
             />
           </View>
         </View>
-        <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginButtonText} >signup</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleSignup}>
+          <Text style={styles.loginButtonText}>Signup</Text>
         </TouchableOpacity>
         <Text style={styles.signupText}>
           Already have an account? {"\n"}  
@@ -63,9 +85,7 @@ const SignupScreen = ({ navigation }) => {
             <Text style={styles.signupLink}>Login here</Text>
           </TouchableOpacity>
         </Text>
-        <View style={styles.bottomCom}>
-
-        </View>
+        <View style={styles.bottomCom}></View>
       </View>
     </View>
   );

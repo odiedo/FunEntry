@@ -5,6 +5,9 @@ import { StatusBar } from 'expo-status-bar';
 import SplashScreen from './src/components/SplashScreen';
 import LoginScreen from './src/components/LoginScreen';
 import SignupScreen from './src/components/SignupScreen';
+import HomeScreen from './src/components/HomeScreen';
+import StudentScreen from './src/components/StudentScreen';
+import ParentsInfoScreen from './src/components/ParentsInfoScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +24,9 @@ export default function App() {
               <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
               <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
               <Stack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Student" component={StudentScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="ParentsInfo" component={ParentsInfoScreen} options={{ headerShown: false }}/>
             </Stack.Navigator>
         </NavigationContainer>
     </>

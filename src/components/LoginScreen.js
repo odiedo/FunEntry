@@ -1,8 +1,45 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://192.168.100.11:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await AsyncStorage.setItem('token', data.access_token);
+        
+        Alert.alert('Success', 'Logged in successfully');
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Error', data.message || 'Login failed');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred during login');
+      console.error(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -18,6 +55,8 @@ const LoginScreen = ({ navigation }) => {
               placeholder="odiedo@gmail.com"
               keyboardType="email-address"
               placeholderTextColor="#6a6a6a"
+              value={email}
+              onChangeText={setEmail}
             />
             <Image
               source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/new-post.png' }}
@@ -33,6 +72,8 @@ const LoginScreen = ({ navigation }) => {
               placeholder="Password"
               secureTextEntry
               placeholderTextColor="#6a6a6a"
+              value={password}
+              onChangeText={setPassword}
             />
             <Image
               source={{ uri: 'https://img.icons8.com/material-outlined/24/000000/lock-2.png' }}
@@ -40,8 +81,8 @@ const LoginScreen = ({ navigation }) => {
             />
           </View>
         </View>
-        <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginButtonText} >login</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <Text style={styles.signupText}>
           Not have account? {"\n"}  
