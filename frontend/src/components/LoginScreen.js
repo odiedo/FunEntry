@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }) => {
         Alert.alert('Success', 'Logged in successfully');
         navigation.navigate('Home');
       } else {
-        Alert.alert('Error', data.message || 'Login failed');
+        Alert.alert('Failed!', data.message || 'Login failed');
       }
     } catch (error) {
       Alert.alert('Error', 'An error occurred during login');
