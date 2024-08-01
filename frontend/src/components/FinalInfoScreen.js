@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAv
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
+import { ceil } from 'lodash';
 const FinalInfoScreen = ({ navigation }) => {
     const [feeStructure, setFeeStructure] = useState(null);
     const [resultSlip, setResultSlip] = useState(null);
@@ -42,7 +43,7 @@ const FinalInfoScreen = ({ navigation }) => {
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.fieldsContainer}>
-                <View style={styles.fieldset}>
+                    <View style={styles.fieldset}>
                         <Text style={styles.legend}>Disabled?</Text>
                         <View style={styles.inputContainer}>
                             <Picker
@@ -54,21 +55,24 @@ const FinalInfoScreen = ({ navigation }) => {
                                 <Picker.Item label='Yes' value="yes" />
                             </Picker>
                         </View>
-                    </View>
-                    {!disableCert === 'yes' && (
-                        <View>
-                            {!disableCert ? (
-                                    <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
-                                        <FontAwesome name='camera' size={35} color="#4A90E2" />
-                                    </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
-                                        <Image source={disableCert} style={styles.idPreview}/>
-                                    </TouchableOpacity>
-                                )
-                            }
+                        {selectedStatus === 'yes' && (
+                            <View style={styles.fieldset}>
+                                <Text style={styles.legendAtt}>Disability Certiicate</Text>
+                                <View style={styles.conditionAtt}>
+                                    {!disableCert ? (
+                                            <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
+                                                <FontAwesome name='camera' size={35} color="#4A90E2" />
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
+                                                <Image source={disableCert} style={styles.idPreviewAtt}/>
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                </View>
                             </View>
-                    )}
+                        )}
+                    </View>
 
                     <View style={styles.fieldsetPhoto}>
                         <Text style={styles.legend}>Fee Structure</Text>
@@ -110,29 +114,6 @@ const FinalInfoScreen = ({ navigation }) => {
                             </View>
                             <View>
                                 <Text style={styles.imageId}>No ID</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.fieldsetPhoto}>
-                        <Text style={styles.legend}>Disability Certificate</Text>
-                        <View style={styles.inputContainerPhoto}>
-                            <View>
-                            {!disableCert ? (
-                                    <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
-                                        <FontAwesome name='camera' size={35} color="#4A90E2" />
-                                    </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
-                                        <Image source={disableCert} style={styles.idPreview}/>
-                                    </TouchableOpacity>
-                                )
-                            }
-                            </View>
-                            <View>
-                                <Text style={styles.imageId}>No cert</Text>
                                 <TouchableOpacity>
                                     <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
                                 </TouchableOpacity>
@@ -226,6 +207,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#4A90E2',
     },
+    legendAtt: {
+        textAlign: 'center',
+    },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -265,6 +249,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginHorizontal: 1,
     }, 
+    conditionAtt: {
+        display: 'flex',
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+    idPreviewAtt: {
+        width: 70,
+        height: 70,
+        borderRadius: 10,
+        paddingHorizontal: 10,
+    },
     footer: {
         width: '100%',
         height: 60,
