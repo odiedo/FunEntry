@@ -187,7 +187,7 @@ const StudentScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('ParentsInfo')} >
+                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('ParentsInfo', { parentStatus: selectedParentStatus })} >
                     <Text style={styles.nextButtonText}>Next</Text>
                 </TouchableOpacity>
             </View>

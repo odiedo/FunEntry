@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Image, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-const ParentsInfoScreen = ({ navigation }) => {
+const ParentsInfoScreen = ({ route, navigation }) => {
+    // accessing the parent status from navigation
+    const { parentStatus } = route.params;
     const [fatherFrontIdPhoto, setFrontFatherIdPhoto] = useState(null);
     const [fatherBackIdPhoto, setBackFatherIdPhoto] = useState(null);
     const [motherFrontIdPhoto, setMotherFrontIdPhoto] = useState(null);
@@ -41,30 +43,30 @@ const ParentsInfoScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.fieldsContainer}>
-                    {/* Father section */}
-                    <View style={styles.fieldset}>
-                        <Text style={styles.legend}>Father's name</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Festus Etyang Emuria"
-                                placeholderTextColor="lightgrey"
-                            />
+                {parentStatus !== 'single_parent' && (
+                    <View style={styles.fieldsContainer}>
+                        <View style={styles.fieldset}>
+                            <Text style={styles.legend}>Father's name</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Festus Etyang Emuria"
+                                    placeholderTextColor="lightgrey"
+                                />
+                            </View>
                         </View>
-                    </View>
-                    <View style={styles.fieldset}>
-                        <Text style={styles.legend}>ID Number</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="4239489"
-                                placeholderTextColor="lightgrey"
-                                keyboardType="phone-pad"
-                            />
+                        <View style={styles.fieldset}>
+                            <Text style={styles.legend}>ID Number</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="4239489"
+                                    placeholderTextColor="lightgrey"
+                                    keyboardType="phone-pad"
+                                />
+                            </View>
                         </View>
-                    </View>
-                    <View style={styles.fieldsetPhoto}>
+                        <View style={styles.fieldsetPhoto}>
                         <Text style={styles.legend}>Father ID Photo</Text>
                         <View style={styles.inputContainerPhoto}>
                             <View>
@@ -103,7 +105,11 @@ const ParentsInfoScreen = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
-                    {/* Mother Section */}
+                </View>
+                )}
+
+                {/* Mother Section */}
+                <View style={styles.fieldsContainer}>
                     <View style={styles.fieldset}>
                         <Text style={styles.legend}>Mother's name</Text>
                         <View style={styles.inputContainer}>
@@ -176,7 +182,7 @@ const ParentsInfoScreen = ({ navigation }) => {
                 </View>
             </ScrollView>
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Student')}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('FinalInfo')}>
