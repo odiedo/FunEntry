@@ -146,7 +146,7 @@ const FinalInfoScreen = ({ navigation }) => {
                 </View>
             </ScrollView>
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('ParentsInfo')}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('Complete')} >
