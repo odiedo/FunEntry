@@ -36,7 +36,9 @@ const ParentsInfoScreen = ({ navigation }) => {
         >
             <View style={styles.header}>
                 <Text style={styles.headerText}>B: Parents Information</Text>
-                <FontAwesome name="times-circle" size={24} color='#fff' />
+                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                    <FontAwesome name="times-circle" size={24} color='#fff' />
+                </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.fieldsContainer}>
@@ -58,6 +60,7 @@ const ParentsInfoScreen = ({ navigation }) => {
                                 style={styles.input}
                                 placeholder="4239489"
                                 placeholderTextColor="lightgrey"
+                                keyboardType="phone-pad"
                             />
                         </View>
                     </View>
@@ -112,12 +115,13 @@ const ParentsInfoScreen = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={styles.fieldset}>
-                        <Text style={styles.legend}>ID Number</Text>
+                        <Text style={styles.legend}>Mother's ID Number</Text>
                         <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
                                 placeholder="2789283"
                                 placeholderTextColor="lightgrey"
+                                keyboardType="phone-pad"
                             />
                         </View>
                     </View>

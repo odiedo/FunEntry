@@ -9,6 +9,7 @@ import HomeScreen from './src/components/HomeScreen';
 import StudentScreen from './src/components/StudentScreen';
 import ParentsInfoScreen from './src/components/ParentsInfoScreen';
 import FinalInfoScreen from './src/components/FinalInfoScreen';
+import CompleteScreen from './src/components/CompleteScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +30,7 @@ export default function App() {
               <Stack.Screen name="Student" component={StudentScreen} options={{ headerShown: false }} />
               <Stack.Screen name="ParentsInfo" component={ParentsInfoScreen} options={{ headerShown: false }}/>
               <Stack.Screen name="FinalInfo" component={FinalInfoScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Complete" component={CompleteScreen} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     </>

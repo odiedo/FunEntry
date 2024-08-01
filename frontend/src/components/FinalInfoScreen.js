@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { Picker } from '@react-native-picker/picker';
+import { ceil } from 'lodash';
 const FinalInfoScreen = ({ navigation }) => {
     const [feeStructure, setFeeStructure] = useState(null);
     const [resultSlip, setResultSlip] = useState(null);
     const [proofNeed, setProofNeed] = useState(null);
     const [disableCert, setDisableCert] = useState(null);
-
+    const [selectedStatus, setSelectedStatus] = useState('');
     const handleCapture = async (setImage) => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -35,10 +37,43 @@ const FinalInfoScreen = ({ navigation }) => {
             >
             <View style={styles.header}>
                 <Text style={styles.headerText}>C: Attachment Information</Text>
-                <FontAwesome name="times-circle" size={24} color='#fff' />
+                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                    <FontAwesome name="times-circle" size={24} color='#fff' />
+                </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.fieldsContainer}>
+                    <View style={styles.fieldset}>
+                        <Text style={styles.legend}>Disabled?</Text>
+                        <View style={styles.inputContainer}>
+                            <Picker
+                                selectedValue={selectedStatus}
+                                onValueChange={(itemValue) => setSelectedStatus(itemValue)}
+                                style={styles.input}
+                            >
+                                <Picker.Item label='No' value="no" />
+                                <Picker.Item label='Yes' value="yes" />
+                            </Picker>
+                        </View>
+                        {selectedStatus === 'yes' && (
+                            <View style={styles.fieldset}>
+                                <Text style={styles.legendAtt}>Disability Certiicate</Text>
+                                <View style={styles.conditionAtt}>
+                                    {!disableCert ? (
+                                            <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
+                                                <FontAwesome name='camera' size={35} color="#4A90E2" />
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
+                                                <Image source={disableCert} style={styles.idPreviewAtt}/>
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                </View>
+                            </View>
+                        )}
+                    </View>
+
                     <View style={styles.fieldsetPhoto}>
                         <Text style={styles.legend}>Fee Structure</Text>
                         <View style={styles.inputContainerPhoto}>
@@ -86,29 +121,6 @@ const FinalInfoScreen = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={styles.fieldsetPhoto}>
-                        <Text style={styles.legend}>Disability Certificate</Text>
-                        <View style={styles.inputContainerPhoto}>
-                            <View>
-                            {!disableCert ? (
-                                    <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
-                                        <FontAwesome name='camera' size={35} color="#4A90E2" />
-                                    </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
-                                        <Image source={disableCert} style={styles.idPreview}/>
-                                    </TouchableOpacity>
-                                )
-                            }
-                            </View>
-                            <View>
-                                <Text style={styles.imageId}>No cert</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.fieldsetPhoto}>
                         <Text style={styles.legend}>Proof of need (if any)</Text>
                         <View style={styles.inputContainerPhoto}>
                             <View>
@@ -137,7 +149,7 @@ const FinalInfoScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('ParentsInfo')}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('CompleteEntry')} >
+                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('Complete')} >
                     <Text style={styles.nextButtonText}>Next</Text>
                 </TouchableOpacity>
             </View>
@@ -195,6 +207,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#4A90E2',
     },
+    legendAtt: {
+        textAlign: 'center',
+    },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -234,6 +249,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginHorizontal: 1,
     }, 
+    conditionAtt: {
+        display: 'flex',
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+    idPreviewAtt: {
+        width: 70,
+        height: 70,
+        borderRadius: 10,
+        paddingHorizontal: 10,
+    },
     footer: {
         width: '100%',
         height: 60,

@@ -11,7 +11,7 @@ const HomeScreen = ({ navigation }) => {
     const fetchUserDetails = async () => {
       try {
         const token = await getToken();
-        const response = await axios.get('http://192.168.100.11:5000/user', {
+        const response = await axios.get('http://192.168.100.16:5000/user', {
           headers: {
             // Pass the retrieved token in the header
             Authorization: `Bearer ${token}`, 
