@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import axios from 'axios';
-import {getToken} from '../utils/auth';
-import { Picker } from '@react-native-picker/picker'
+import { getToken } from '../utils/auth';
+import { Picker } from '@react-native-picker/picker';
 
 const HomeScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -13,7 +13,27 @@ const HomeScreen = ({ navigation }) => {
     location: 'Akadetewai',
     subLocation: 'Olobai', 
   });
-  const [newLocationData, setNewLocationData] = useState({...locationData});
+  
+  const [newLocationData, setNewLocationData] = useState({ ...locationData });
+  const [locations, setLocations] = useState([]);
+  const [subLocations, setSubLocations] = useState([]);
+
+  const locationStructure = {
+    "Malaba Central Ward": {
+      locations: ["Akadetewai", "Machakusi"],
+      subLocations: {
+        "Akadetewai": ["Olobai", "Odoot", "Township"],
+        "Machakusi": ["Amoni", "Machakusi"]
+      } 
+    },
+    "Malaba North Ward": {
+      locations: ["Kamuriai", "Osajai"],
+      subLocations: {
+        "Kamuriai": ["Kamuriai", "Okuleu"],
+        "Osajai": ["Amukura", "Kiriko", "Chamasiri"]
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -21,7 +41,6 @@ const HomeScreen = ({ navigation }) => {
         const token = await getToken();
         const response = await axios.get('http://192.168.100.16:5000/user', {
           headers: {
-            // Pass the retrieved token in the header
             Authorization: `Bearer ${token}`, 
           },
         });
@@ -34,21 +53,44 @@ const HomeScreen = ({ navigation }) => {
     fetchUserDetails();
   }, []);
 
+  useEffect(() => {
+    const selectedWard = newLocationData.ward;
+    const selectedLocations = locationStructure[selectedWard]?.locations || [];
+    const selectedSubLocations = locationStructure[selectedWard]?.subLocations[selectedLocations[0]] || [];
+
+    setLocations(selectedLocations);
+    setSubLocations(selectedSubLocations);
+    setNewLocationData({
+      ...newLocationData,
+      location: selectedLocations[0] || '',
+      subLocation: selectedSubLocations[0] || ''
+    });
+  }, [newLocationData.ward]);
+
+  const handleLocationChange = (itemValue) => {
+    const selectedSubLocations = locationStructure[newLocationData.ward]?.subLocations[itemValue] || [];
+    setSubLocations(selectedSubLocations);
+    setNewLocationData({
+      ...newLocationData,
+      location: itemValue,
+      subLocation: selectedSubLocations[0] || ''
+    });
+  };
+
   const handleSaveLocation = () => {
     setLocationData(newLocationData);
     setModalVisible(false);
-  }
+  };
 
-  
-  
   return (
     <View style={styles.container}>
-      {/* header */}
+      {/* Header */}
       <View style={styles.header}>
         <FontAwesome name="user" size={24} color="black" style={styles.icon} />
         <Text style={styles.headerText}>{username}</Text>
       </View>
-      {/* data entry summary section */}
+
+      {/* Data Entry Summary Section */}
       <Text style={styles.funEntryText}>FunEntry</Text>
       <View style={styles.statisticsCard}>
         <View style={styles.statRow}>
@@ -77,9 +119,8 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
 
-
-      {/* start data entry section */}
-      <TouchableOpacity style={styles.startEntryBtn} onPress={() => navigation.navigate('Student') }>
+      {/* Start Data Entry Section */}
+      <TouchableOpacity style={styles.startEntryBtn} onPress={() => navigation.navigate('Student')}>
         <FontAwesome name='power-off' size={100} color="#4A90E2" />
         <Text style={styles.startEntryText}>start entry</Text>
       </TouchableOpacity>
@@ -92,32 +133,28 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.last24hText}>Last 24h <FontAwesome name="caret-down" size={14} color="black" /></Text>
         </TouchableOpacity>
       </View>
-      
 
-      {/* data entry location section */}
+      {/* Data Entry Location Section */}
       <View style={styles.locationCard}>
         <Text style={styles.locationText}>Ward: <Text style={styles.locationValue}>{locationData.ward}</Text></Text>
         <Text style={styles.locationText}>Location: <Text style={styles.locationValue}>{locationData.location}</Text></Text>
         <Text style={styles.locationText}>Sub Location: <Text style={styles.locationValue}>{locationData.subLocation}</Text></Text>
       </View>
 
-
-
-      {/* Footer navigation bar  */}
+      {/* Footer Navigation Bar */}
       <View style={styles.footer}>
-        <FontAwesome name='cog' size={24}  color='#000' />
-        <FontAwesome name='bell' size={24}  color='#000' />
-        <FontAwesome name='trash' size={24}  color='#000' />
-        <FontAwesome name='clock-o' size={24}  color='#000' />
-        <FontAwesome name='home' size={24}  color='#000' />
+        <FontAwesome name='cog' size={24} color='#000' />
+        <FontAwesome name='bell' size={24} color='#000' />
+        <FontAwesome name='trash' size={24} color='#000' />
+        <FontAwesome name='clock-o' size={24} color='#000' />
+        <FontAwesome name='home' size={24} color='#000' />
       </View>
 
-
-      {/* Modal settings for location */}
+      {/* Modal Settings for Location */}
       <Modal
         animationType="slide"
-        transparent ={true}
-        visible = {modalVisible}
+        transparent={true}
+        visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
@@ -125,34 +162,34 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.modalTitle}> Set Entry Location</Text>
             <Picker
               selectedValue={newLocationData.ward}
-              onValueChange={(itemValue) => setNewLocationData({...newLocationData, ward: itemValue })}
+              onValueChange={(itemValue) => setNewLocationData({ ...newLocationData, ward: itemValue })}
             >
-                <Picker.Item label="Malaba Central" value="Malaba Central Ward"/>
-                <Picker.Item label="Malaba North" value="Malaba North Ward"/>
+              <Picker.Item label="Malaba Central" value="Malaba Central Ward" />
+              <Picker.Item label="Malaba North" value="Malaba North Ward" />
             </Picker>
-            
 
-            <TextInput 
-              style={styles.input}
-              placeholder='location'
-              value={newLocationData.location}
-              onChangeText={(text) => setNewLocationData({ ...newLocationData, location: text })}
-            />
+            <Picker
+              selectedValue={newLocationData.location}
+              onValueChange={handleLocationChange}
+            >
+              {locations.map((loc, index) => (
+                <Picker.Item key={index} label={loc} value={loc} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={newLocationData.subLocation}
+              onValueChange={(itemValue) => setNewLocationData({ ...newLocationData, subLocation: itemValue })}
+            >
+              {subLocations.map((subLoc, index) => (
+                <Picker.Item key={index} label={subLoc} value={subLoc} />
+              ))}
+            </Picker>
 
-            <TextInput 
-              style={styles.input}
-              placeholder='sub location'
-              value={newLocationData.subLocation}
-              onChangeText={(text) => setNewLocationData({ ...newLocationData, subLocation: text })}
-            />
-
-            <Button title="Save" onPress={handleSaveLocation}/>
-            <Button title="Cancel" onPress={() => setModalVisible(false)}  />
-
+            <Button title="Save" onPress={handleSaveLocation} />
+            <Button title="Cancel" onPress={() => setModalVisible(false)} />
           </View>
-        </View>        
+        </View>
       </Modal>
-
     </View>
   );
 };
