@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, Button } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import axios from 'axios';
-import { getToken } from '../utils/auth';
+import {getToken} from '../utils/auth';
+import { Picker } from '@react-native-picker/picker'
 
 const HomeScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [locationData, setLocationData] = useState({
+    ward: 'Malaba Central',
+    location: 'Akadetewai',
+    subLocation: 'Olobai', 
+  });
+  const [newLocationData, setNewLocationData] = useState({...locationData});
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -26,6 +34,11 @@ const HomeScreen = ({ navigation }) => {
     fetchUserDetails();
   }, []);
 
+  const handleSaveLocation = () => {
+    setLocationData(newLocationData);
+    setModalVisible(false);
+  }
+
   
   
   return (
@@ -34,7 +47,6 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.header}>
         <FontAwesome name="user" size={24} color="black" style={styles.icon} />
         <Text style={styles.headerText}>{username}</Text>
-        <FontAwesome name="sliders" size={24} color="black" style={styles.settingsIcon} />
       </View>
       {/* data entry summary section */}
       <Text style={styles.funEntryText}>FunEntry</Text>
@@ -72,14 +84,24 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.startEntryText}>start entry</Text>
       </TouchableOpacity>
 
-      <Text style={styles.last24hText}>Last 24h <FontAwesome name="caret-down" size={14} color="black" /></Text>
+      <View style={styles.settingBar}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <FontAwesome name="sliders" size={24} color="black" style={styles.settingsIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.last24hText}>Last 24h <FontAwesome name="caret-down" size={14} color="black" /></Text>
+        </TouchableOpacity>
+      </View>
+      
 
       {/* data entry location section */}
       <View style={styles.locationCard}>
-        <Text style={styles.locationText}>Ward: <Text style={styles.locationValue}>Malaba Central</Text></Text>
-        <Text style={styles.locationText}>Location: <Text style={styles.locationValue}>Olobai</Text></Text>
-        <Text style={styles.locationText}>Sub Location: <Text style={styles.locationValue}>Akadetewai</Text></Text>
+        <Text style={styles.locationText}>Ward: <Text style={styles.locationValue}>{locationData.ward}</Text></Text>
+        <Text style={styles.locationText}>Location: <Text style={styles.locationValue}>{locationData.location}</Text></Text>
+        <Text style={styles.locationText}>Sub Location: <Text style={styles.locationValue}>{locationData.subLocation}</Text></Text>
       </View>
+
+
 
       {/* Footer navigation bar  */}
       <View style={styles.footer}>
@@ -89,6 +111,47 @@ const HomeScreen = ({ navigation }) => {
         <FontAwesome name='clock-o' size={24}  color='#000' />
         <FontAwesome name='home' size={24}  color='#000' />
       </View>
+
+
+      {/* Modal settings for location */}
+      <Modal
+        animationType="slide"
+        transparent ={true}
+        visible = {modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}> Set Entry Location</Text>
+            <Picker
+              selectedValue={newLocationData.ward}
+              onValueChange={(itemValue) => setNewLocationData({...newLocationData, ward: itemValue })}
+            >
+                <Picker.Item label="Malaba Central" value="Malaba Central Ward"/>
+                <Picker.Item label="Malaba North" value="Malaba North Ward"/>
+            </Picker>
+            
+
+            <TextInput 
+              style={styles.input}
+              placeholder='location'
+              value={newLocationData.location}
+              onChangeText={(text) => setNewLocationData({ ...newLocationData, location: text })}
+            />
+
+            <TextInput 
+              style={styles.input}
+              placeholder='sub location'
+              value={newLocationData.subLocation}
+              onChangeText={(text) => setNewLocationData({ ...newLocationData, subLocation: text })}
+            />
+
+            <Button title="Save" onPress={handleSaveLocation}/>
+            <Button title="Cancel" onPress={() => setModalVisible(false)}  />
+
+          </View>
+        </View>        
+      </Modal>
 
     </View>
   );
@@ -119,9 +182,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  settingsIcon: {
-    marginLeft: 'auto',
-  },
+
   funEntryText: {
     alignSelf: 'flex-start',
     marginLeft: 15,
@@ -170,12 +231,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
   },
-  last24hText: {
-    alignSelf: 'flex-end',
-    marginRight: 15,
+  settingBar: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 20,
+    paddingHorizontal: 25,
+  },
+  last24hText: {
     fontSize: 14,
     color: '#777',
+  },
+  settingsIcon: {
+    fontSize: 18,
   },
   locationCard: {
     width: '90%',
@@ -201,6 +270,32 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#EEE',
     marginTop: 'auto',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '100%',
+    height: '50%',
+    top: '50%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
   },
 
 });
