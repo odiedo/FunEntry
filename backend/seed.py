@@ -17,7 +17,15 @@ def seed_users():
 
     db.session.commit()
 
+# def seed_locations():
+#     #entry location
+#     initial_location = [
+#         { 'ward': 'malaba_central', 'location': 'akadetewai', 'sub_location': 'olobai' }
+#         { 'ward': 'malaba_north', 'location': 'amoni', 'sub_location': 'amoni' }
+#     ]
     
+#     for location_data in initial_location:
+        
 
 if __name__ == '__main__':
     app = create_app()

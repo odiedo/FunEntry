@@ -1,11 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import axios from 'axios';
 import { getToken } from '../utils/auth';
+import { Picker } from '@react-native-picker/picker';
 
 const HomeScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [locationData, setLocationData] = useState({
+    ward: 'Malaba Central',
+    location: 'Akadetewai',
+    subLocation: 'Olobai', 
+  });
+  
+  const [newLocationData, setNewLocationData] = useState({ ...locationData });
+  const [locations, setLocations] = useState([]);
+  const [subLocations, setSubLocations] = useState([]);
+
+  const locationStructure = {
+    "Malaba Central Ward": {
+      locations: ["Akadetewai", "Machakusi"],
+      subLocations: {
+        "Akadetewai": ["Olobai", "Odoot", "Township"],
+        "Machakusi": ["Amoni", "Machakusi"]
+      } 
+    },
+    "Malaba North Ward": {
+      locations: ["Kamuriai", "Osajai"],
+      subLocations: {
+        "Kamuriai": ["Kamuriai", "Okuleu"],
+        "Osajai": ["Amukura", "Kiriko", "Chamasiri"]
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -13,7 +41,6 @@ const HomeScreen = ({ navigation }) => {
         const token = await getToken();
         const response = await axios.get('http://192.168.100.16:5000/user', {
           headers: {
-            // Pass the retrieved token in the header
             Authorization: `Bearer ${token}`, 
           },
         });
@@ -26,17 +53,44 @@ const HomeScreen = ({ navigation }) => {
     fetchUserDetails();
   }, []);
 
-  
-  
+  useEffect(() => {
+    const selectedWard = newLocationData.ward;
+    const selectedLocations = locationStructure[selectedWard]?.locations || [];
+    const selectedSubLocations = locationStructure[selectedWard]?.subLocations[selectedLocations[0]] || [];
+
+    setLocations(selectedLocations);
+    setSubLocations(selectedSubLocations);
+    setNewLocationData({
+      ...newLocationData,
+      location: selectedLocations[0] || '',
+      subLocation: selectedSubLocations[0] || ''
+    });
+  }, [newLocationData.ward]);
+
+  const handleLocationChange = (itemValue) => {
+    const selectedSubLocations = locationStructure[newLocationData.ward]?.subLocations[itemValue] || [];
+    setSubLocations(selectedSubLocations);
+    setNewLocationData({
+      ...newLocationData,
+      location: itemValue,
+      subLocation: selectedSubLocations[0] || ''
+    });
+  };
+
+  const handleSaveLocation = () => {
+    setLocationData(newLocationData);
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
-      {/* header */}
+      {/* Header */}
       <View style={styles.header}>
         <FontAwesome name="user" size={24} color="black" style={styles.icon} />
         <Text style={styles.headerText}>{username}</Text>
-        <FontAwesome name="sliders" size={24} color="black" style={styles.settingsIcon} />
       </View>
-      {/* data entry summary section */}
+
+      {/* Data Entry Summary Section */}
       <Text style={styles.funEntryText}>FunEntry</Text>
       <View style={styles.statisticsCard}>
         <View style={styles.statRow}>
@@ -65,31 +119,77 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
 
-
-      {/* start data entry section */}
-      <TouchableOpacity style={styles.startEntryBtn} onPress={() => navigation.navigate('Student') }>
+      {/* Start Data Entry Section */}
+      <TouchableOpacity style={styles.startEntryBtn} onPress={() => navigation.navigate('Student')}>
         <FontAwesome name='power-off' size={100} color="#4A90E2" />
         <Text style={styles.startEntryText}>start entry</Text>
       </TouchableOpacity>
 
-      <Text style={styles.last24hText}>Last 24h <FontAwesome name="caret-down" size={14} color="black" /></Text>
+      <View style={styles.settingBar}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <FontAwesome name="sliders" size={24} color="black" style={styles.settingsIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.last24hText}>Last 24h <FontAwesome name="caret-down" size={14} color="black" /></Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* data entry location section */}
+      {/* Data Entry Location Section */}
       <View style={styles.locationCard}>
-        <Text style={styles.locationText}>Ward: <Text style={styles.locationValue}>Malaba Central</Text></Text>
-        <Text style={styles.locationText}>Location: <Text style={styles.locationValue}>Olobai</Text></Text>
-        <Text style={styles.locationText}>Sub Location: <Text style={styles.locationValue}>Akadetewai</Text></Text>
+        <Text style={styles.locationText}>Ward: <Text style={styles.locationValue}>{locationData.ward}</Text></Text>
+        <Text style={styles.locationText}>Location: <Text style={styles.locationValue}>{locationData.location}</Text></Text>
+        <Text style={styles.locationText}>Sub Location: <Text style={styles.locationValue}>{locationData.subLocation}</Text></Text>
       </View>
 
-      {/* Footer navigation bar  */}
+      {/* Footer Navigation Bar */}
       <View style={styles.footer}>
-        <FontAwesome name='cog' size={24}  color='#000' />
-        <FontAwesome name='bell' size={24}  color='#000' />
-        <FontAwesome name='trash' size={24}  color='#000' />
-        <FontAwesome name='clock-o' size={24}  color='#000' />
-        <FontAwesome name='home' size={24}  color='#000' />
+        <FontAwesome name='cog' size={24} color='#000' />
+        <FontAwesome name='bell' size={24} color='#000' />
+        <FontAwesome name='trash' size={24} color='#000' />
+        <FontAwesome name='clock-o' size={24} color='#000' />
+        <FontAwesome name='home' size={24} color='#000' />
       </View>
 
+      {/* Modal Settings for Location */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}> Set Entry Location</Text>
+            <Picker
+              selectedValue={newLocationData.ward}
+              onValueChange={(itemValue) => setNewLocationData({ ...newLocationData, ward: itemValue })}
+            >
+              <Picker.Item label="Malaba Central" value="Malaba Central Ward" />
+              <Picker.Item label="Malaba North" value="Malaba North Ward" />
+            </Picker>
+
+            <Picker
+              selectedValue={newLocationData.location}
+              onValueChange={handleLocationChange}
+            >
+              {locations.map((loc, index) => (
+                <Picker.Item key={index} label={loc} value={loc} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={newLocationData.subLocation}
+              onValueChange={(itemValue) => setNewLocationData({ ...newLocationData, subLocation: itemValue })}
+            >
+              {subLocations.map((subLoc, index) => (
+                <Picker.Item key={index} label={subLoc} value={subLoc} />
+              ))}
+            </Picker>
+
+            <Button title="Save" onPress={handleSaveLocation} />
+            <Button title="Cancel" onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -119,9 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  settingsIcon: {
-    marginLeft: 'auto',
-  },
+
   funEntryText: {
     alignSelf: 'flex-start',
     marginLeft: 15,
@@ -170,12 +268,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
   },
-  last24hText: {
-    alignSelf: 'flex-end',
-    marginRight: 15,
+  settingBar: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 20,
+    paddingHorizontal: 25,
+  },
+  last24hText: {
     fontSize: 14,
     color: '#777',
+  },
+  settingsIcon: {
+    fontSize: 18,
   },
   locationCard: {
     width: '90%',
@@ -201,6 +307,32 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#EEE',
     marginTop: 'auto',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '100%',
+    height: '50%',
+    top: '50%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
   },
 
 });
