@@ -19,6 +19,10 @@ const StudentScreen = ({ navigation }) => {
     const [selectedGender, setSelectedGender] = useState('');
     const [inputSchool, setInputSchool] = useState('');
     const [filteredSchools, setFilteredSchools] = useState([]);
+    const [studentName, setStudentName] = useState('');
+    const [admNo, setAdmNo] = useState('');
+    const [formClass, setFormClass] = useState('');
+    const [feeBalance, setFeeBalance] = useState('');
 
     const handleInputChange = (text) => {
         setInputSchool(text);
@@ -42,6 +46,19 @@ const StudentScreen = ({ navigation }) => {
     const handleSchoolSelect = (school) => {
         setInputSchool(school);
         setFilteredSchools([]);
+    };
+
+    const handleNext = () => {
+        navigation.navigate('ParentsInfo', {
+            studentName,
+            admNo,
+            inputSchool,
+            selectedGender,
+            selectedLevel,
+            formClass,
+            feeBalance,
+            selectedParentStatus
+        });
     };
 
     return (
@@ -68,7 +85,22 @@ const StudentScreen = ({ navigation }) => {
                                     style={styles.input}
                                     placeholder="Jane Doe"
                                     placeholderTextColor="lightgrey"
+                                    value={studentName}
+                                    onChangeText={setStudentName}
                                 />
+                            </View>
+                        </View>
+                        <View style={styles.fieldset}>
+                            <Text style={styles.legend}>Gender</Text>
+                            <View style={styles.inputContainer}>
+                                <Picker 
+                                    selectedValue={selectedGender}
+                                    onValueChange={(itemValue) => setSelectedGender(itemValue)}
+                                    style={styles.input}
+                                >
+                                    <Picker.Item label="Male" value="male" />
+                                    <Picker.Item label="Female" value="female" />
+                                </Picker>
                             </View>
                         </View>
                         <View style={styles.fieldset}>
@@ -78,6 +110,8 @@ const StudentScreen = ({ navigation }) => {
                                     style={styles.input}
                                     placeholder="1427"
                                     placeholderTextColor="lightgrey"
+                                    value={admNo}
+                                    onChangeText={setAdmNo}
                                 />
                             </View>
                         </View>
@@ -127,16 +161,8 @@ const StudentScreen = ({ navigation }) => {
                                     placeholder="4"
                                     placeholderTextColor="lightgrey"
                                     keyboardType="phone-pad"
-                                />
-                            </View>
-                        </View>
-                        <View style={styles.fieldset}>
-                            <Text style={styles.legend}>Birth Certificate no</Text>
-                            <View style={styles.inputContainer}>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="A3200F326"
-                                    placeholderTextColor="lightgrey"
+                                    value={formClass}
+                                    onChangeText={setFormClass}
                                 />
                             </View>
                         </View>
@@ -148,6 +174,8 @@ const StudentScreen = ({ navigation }) => {
                                     placeholder="1200"
                                     placeholderTextColor="lightgrey"
                                     keyboardType="phone-pad"
+                                    value={feeBalance}
+                                    onChangeText={setFeeBalance}
                                 />
                             </View>
                         </View>
@@ -159,23 +187,11 @@ const StudentScreen = ({ navigation }) => {
                                     onValueChange={(itemValue) => setSelectedParentStatus(itemValue)}
                                     style={styles.input}
                                 >
+                                    <Picker.Item label='Select Parent Status' />
                                     <Picker.Item label='Needy' value="needy" />
                                     <Picker.Item label='Partial Orphan' value="partial_orphan" />
                                     <Picker.Item label='Total Orphan' value="total_orphan" />
                                     <Picker.Item label='Single Parent' value="single_parent" />
-                                </Picker>
-                            </View>
-                        </View>
-                        <View style={styles.fieldset}>
-                            <Text style={styles.legend}>Gender</Text>
-                            <View style={styles.inputContainer}>
-                                <Picker 
-                                    selectedValue={selectedGender}
-                                    onValueChange={(itemValue) => setSelectedGender(itemValue)}
-                                    style={styles.input}
-                                >
-                                    <Picker.Item label="Male" value="male" />
-                                    <Picker.Item label="Female" value="female" />
                                 </Picker>
                             </View>
                         </View>
@@ -187,7 +203,7 @@ const StudentScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('ParentsInfo', { parentStatus: selectedParentStatus })} >
+                <TouchableOpacity style={styles.nextButton} onPress={handleNext} >
                     <Text style={styles.nextButtonText}>Next</Text>
                 </TouchableOpacity>
             </View>

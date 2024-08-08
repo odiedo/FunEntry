@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
-import { ceil } from 'lodash';
-const FinalInfoScreen = ({ navigation }) => {
+import axios from 'axios';
+const FinalInfoScreen = ({ route, navigation }) => {
+
+    const { studentName, admNo, selectedGender, selectedLevel, inputSchool, formClass, feeBalance, selectedParentStatus, fatherName, fatherIdNumber, fatherFrontIdPhoto, fatherBackIdPhoto, fatherNoId, motherName, motherIdNumber, motherFrontIdPhoto, motherBackIdPhoto, motherNoId, applicantPhoneNumber } = route.params
     const [feeStructure, setFeeStructure] = useState(null);
     const [resultSlip, setResultSlip] = useState(null);
-    const [proofNeed, setProofNeed] = useState(null);
+    const [birthCert, setBirthCert] = useState(null);
     const [disableCert, setDisableCert] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState('');
+    const [birthCertNo, setBirthCertNo] = useState('');
+    const [noBirthCert, setNoBirthCert] = useState(false);
+    const [noTranscript, setNoTranscript] = useState(false);
+    const [noFeeStructure, setNoFeeStructure] = useState(false);
     const handleCapture = async (setImage) => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -30,6 +36,61 @@ const FinalInfoScreen = ({ navigation }) => {
         }
     };
 
+
+    const handleSubmit = async () => {
+        const formData = new FormData();
+        formData.append('studentName', studentName);
+        formData.append('admNo', admNo);
+        formData.append('selectedGender', selectedGender);
+        formData.append('selectedLevel', selectedLevel);
+        formData.append('inputSchool', inputSchool);
+        formData.append('formClass', formClass);
+        formData.append('feeBalance', feeBalance);
+        formData.append('selectedParentStatus', selectedParentStatus);
+        formData.append('fatherFrontIdPhoto', {
+            uri: fatherFrontIdPhoto.uri,
+            name: 'fatherFrontIdPhoto.jpg',
+            type: 'image/jpeg'
+        });
+        formData.append('fatherBackIdPhoto', {
+            uri: fatherBackIdPhoto.uri,
+            name: 'fatherBackIdPhoto.jpg',
+            type: 'image/jpeg'
+        });
+        formData.append('motherFrontIdPhoto', {
+            uri: motherFrontIdPhoto.uri,
+            name: 'motherFrontIdPhoto.jpg',
+            type: 'image/jpeg'
+        });
+        formData.append('motherBackIdPhoto', {
+            uri: motherBackIdPhoto.uri,
+            name: 'motherBackIdPhoto.jpg',
+            type: 'image/jpeg'
+        });
+        formData.append('motherNoId', motherNoId);
+        formData.append('fatherNoId', fatherNoId);
+        formData.append('fatherName', fatherName);
+        formData.append('fatherIdNumber', fatherIdNumber);
+        formData.append('motherName', motherName);
+        formData.append('motherIdNumber', motherIdNumber);
+        formData.append('applicantPhoneNumber', applicantPhoneNumber);
+    
+        try {
+            const response = await fetch('http://192.168.100.16:5000/submit', {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                alert('Form submitted successfully!');
+                navigation.navigate('Home');
+            } else {
+                alert('Failed to submit the form. Please try again.');
+            }
+        } catch (error) {
+            alert('An error occurred. Please try again.');
+        }
+    };
+    
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -73,72 +134,83 @@ const FinalInfoScreen = ({ navigation }) => {
                             </View>
                         )}
                     </View>
-
+                    <View style={styles.fieldset}>
+                        <Text style={styles.legend}>Birth Certificate no</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="A3200F326"
+                                placeholderTextColor="lightgrey"
+                                value={birthCertNo}
+                                onChangeText={setBirthCertNo}
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.fieldsetPhoto}>
+                        <Text style={styles.legend}>Birth Certificate</Text>
+                        <View style={styles.inputContainerPhoto}>
+                            <View>
+                            {!birthCert ? (
+                                    <TouchableOpacity onPress={() => !noBirthCert && handleCapture(setBirthCert)}>
+                                        <FontAwesome name='camera' size={35} color="#4A90E2" />
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity onPress={() => !noBirthCert && handleCapture(setBirthCert)}>
+                                        <Image source={birthCert} style={styles.idPreview}/>
+                                    </TouchableOpacity>
+                                )
+                            }
+                            </View>
+                            <View>
+                                <Text style={styles.imageId}>No certificate</Text>
+                                <TouchableOpacity onPress={() => setNoBirthCert(!noBirthCert)}>
+                                    <FontAwesome name={noBirthCert ? 'check-circle' : 'circle-o'} size={35} color="#4A90E2" />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
                     <View style={styles.fieldsetPhoto}>
                         <Text style={styles.legend}>Fee Structure</Text>
                         <View style={styles.inputContainerPhoto}>
                             <View>
                             {!feeStructure ? (
-                                    <TouchableOpacity onPress={() => handleCapture(setFeeStructure)}>
+                                    <TouchableOpacity onPress={() => !noFeeStructure && handleCapture(setFeeStructure)}>
                                         <FontAwesome name='camera' size={35} color="#4A90E2" />
                                     </TouchableOpacity>
                                 ) : (
-                                    <TouchableOpacity onPress={() => handleCapture(setFeeStructure)}>
+                                    <TouchableOpacity onPress={() => !noFeeStructure && handleCapture(setFeeStructure)}>
                                         <Image source={feeStructure} style={styles.idPreview}/>
                                     </TouchableOpacity>
                                 )
                             }
                             </View>
                             <View>
-                                <Text style={styles.imageId}>No fee</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
+                                <Text style={styles.imageId}>No fee form</Text>
+                                <TouchableOpacity onPress={() => setNoFeeStructure(!noFeeStructure)}>
+                                    <FontAwesome name={noFeeStructure ? 'check-circle-o' : 'circle-o'} size={35} color="#4A90E2" />
                                 </TouchableOpacity>
                             </View>
                         </View>
                     </View>
                     <View style={styles.fieldsetPhoto}>
-                        <Text style={styles.legend}>Academic Transcript / Results</Text>
+                        <Text style={styles.legend}>Transcript / Results slip</Text>
                         <View style={styles.inputContainerPhoto}>
                             <View>
                             {!resultSlip ? (
-                                    <TouchableOpacity onPress={() => handleCapture(setResultSlip)}>
+                                    <TouchableOpacity onPress={() => !noTranscript && handleCapture(setResultSlip)}>
                                         <FontAwesome name='camera' size={35} color="#4A90E2" />
                                     </TouchableOpacity>
                                 ) : (
-                                    <TouchableOpacity onPress={() => handleCapture(setResultSlip)}>
+                                    <TouchableOpacity onPress={() => !noTranscript && handleCapture(setResultSlip)}>
                                         <Image source={resultSlip} style={styles.idPreview}/>
                                     </TouchableOpacity>
                                 )
                             }
                             </View>
                             <View>
-                                <Text style={styles.imageId}>No ID</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.fieldsetPhoto}>
-                        <Text style={styles.legend}>Proof of need (if any)</Text>
-                        <View style={styles.inputContainerPhoto}>
-                            <View>
-                            {!proofNeed ? (
-                                    <TouchableOpacity onPress={() => handleCapture(setProofNeed)}>
-                                        <FontAwesome name='camera' size={35} color="#4A90E2" />
-                                    </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity onPress={() => handleCapture(setProofNeed)}>
-                                        <Image source={proofNeed} style={styles.idPreview}/>
-                                    </TouchableOpacity>
-                                )
-                            }
-                            </View>
-                            <View>
-                                <Text style={styles.imageId}>No proof</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
+                                <Text style={styles.imageId}>No results</Text>
+                                <TouchableOpacity onPress={() => setNoTranscript(!noTrascript)}>
+                                    <FontAwesome name={noTranscript ? 'check-circle-o' : 'circle-o'} size={35} color="#4A90E2" />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -149,8 +221,8 @@ const FinalInfoScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('Complete')} >
-                    <Text style={styles.nextButtonText}>Next</Text>
+                <TouchableOpacity style={styles.nextButton} onPress={handleSubmit} >
+                    <Text style={styles.nextButtonText}>Submit</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>

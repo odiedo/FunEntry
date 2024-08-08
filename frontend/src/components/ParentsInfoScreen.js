@@ -4,12 +4,18 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 const ParentsInfoScreen = ({ route, navigation }) => {
     // accessing the parent status from navigation
-    const { parentStatus } = route.params;
+    const { studentName, admNo, selectedGender, selectedLevel, inputSchool, formClass, feeBalance, selectedParentStatus } = route.params;
     const [fatherFrontIdPhoto, setFrontFatherIdPhoto] = useState(null);
     const [fatherBackIdPhoto, setBackFatherIdPhoto] = useState(null);
     const [motherFrontIdPhoto, setMotherFrontIdPhoto] = useState(null);
     const [motherBackIdPhoto, setMotherBackIdPhoto] = useState(null);
-
+    const [motherNoId, setMotherNoId] = useState(false);
+    const [fatherNoId, setFatherNoId] = useState(false);
+    const [fatherName, setFatherName] = useState('');
+    const [fatherIdNumber, setFatherIdNumber] = useState('');
+    const [motherName, setMotherName] = useState('');
+    const [motherIdNumber, setMotherIdNumber] = useState('');
+    const [applicantPhoneNumber, setApplicantPhoneNumber] = useState('');
 
     const handleCapture = async (setImage) => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -31,6 +37,30 @@ const ParentsInfoScreen = ({ route, navigation }) => {
         }
     };
 
+    const handleNext = () => {
+        navigation.navigate('FinalInfo', {
+            studentName,
+            admNo,
+            selectedGender,
+            selectedLevel,
+            inputSchool,
+            formClass,
+            feeBalance,
+            selectedParentStatus,
+            fatherFrontIdPhoto,
+            fatherBackIdPhoto,
+            motherFrontIdPhoto,
+            motherBackIdPhoto,
+            motherNoId,
+            fatherNoId,
+            fatherName,
+            fatherIdNumber,
+            motherName,
+            motherIdNumber,
+            applicantPhoneNumber
+        });
+    }
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
@@ -43,7 +73,7 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                 </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                {parentStatus !== 'single_parent' && (
+                {selectedParentStatus !== 'single_parent' && (
                     <View style={styles.fieldsContainer}>
                         <View style={styles.fieldset}>
                             <Text style={styles.legend}>Father's name</Text>
@@ -52,6 +82,8 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                                     style={styles.input}
                                     placeholder="Festus Etyang Emuria"
                                     placeholderTextColor="lightgrey"
+                                    value={fatherName}
+                                    onChangeText={setFatherName}
                                 />
                             </View>
                         </View>
@@ -63,6 +95,8 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                                     placeholder="4239489"
                                     placeholderTextColor="lightgrey"
                                     keyboardType="phone-pad"
+                                    value={fatherIdNumber}
+                                    onChangeText={setFatherIdNumber}
                                 />
                             </View>
                         </View>
@@ -72,11 +106,11 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                             <View>
                                 <Text style={styles.imageId}>Front ID</Text>
                                 {!fatherFrontIdPhoto ? (
-                                        <TouchableOpacity onPress={() => handleCapture(setFrontFatherIdPhoto)}>
+                                        <TouchableOpacity onPress={() => !fatherNoId && handleCapture(setFrontFatherIdPhoto)}>
                                             <FontAwesome name='camera' size={35} color="#4A90E2" />
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPress={() => handleCapture(setFrontFatherIdPhoto)}>
+                                        <TouchableOpacity onPress={() => !fatherNoId && handleCapture(setFrontFatherIdPhoto)}>
                                             <Image source={fatherFrontIdPhoto} style={styles.idPreview}/>
                                         </TouchableOpacity>
                                     )
@@ -86,11 +120,11 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                                 <Text style={styles.imageId}>Back ID</Text>
 
                                 {!fatherBackIdPhoto ? (
-                                        <TouchableOpacity onPress={() => handleCapture(setBackFatherIdPhoto)}>
+                                        <TouchableOpacity onPress={() =>  !fatherNoId && handleCapture(setBackFatherIdPhoto)}>
                                             <FontAwesome name='camera' size={35} color="#4A90E2" />
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPress={() => handleCapture(fatherBackIdPhoto)}>
+                                        <TouchableOpacity onPress={() => !fatherNoId && handleCapture(fatherBackIdPhoto)}>
                                             <Image source={fatherBackIdPhoto} style={styles.idPreview}/>
                                         </TouchableOpacity>
                                     )
@@ -99,8 +133,8 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                             </View>
                             <View>
                                 <Text style={styles.imageId}>No ID</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
+                                <TouchableOpacity onPress={() => setFatherNoId(!fatherNoId)}>
+                                    <FontAwesome name={fatherNoId ? 'check-circle-o' : 'circle-o'} size={35} color="#4A90E2" />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -117,6 +151,8 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                                 style={styles.input}
                                 placeholder="Ann Nafula"
                                 placeholderTextColor="lightgrey"
+                                value={motherName}
+                                onChangeText={setMotherName}
                             />
                         </View>
                     </View>
@@ -128,6 +164,8 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                                 placeholder="2789283"
                                 placeholderTextColor="lightgrey"
                                 keyboardType="phone-pad"
+                                value={motherIdNumber}
+                                onChangeText={setMotherIdNumber}
                             />
                         </View>
                     </View>
@@ -137,11 +175,11 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                             <View>
                                 <Text style={styles.imageId}>Front ID</Text>
                                 {!motherFrontIdPhoto ? (
-                                    <TouchableOpacity onPress={() => handleCapture(setMotherFrontIdPhoto)}>
+                                    <TouchableOpacity onPress={() => !motherNoId && handleCapture(setMotherFrontIdPhoto)}>
                                         <FontAwesome name='camera' size={35} color="#4A90E2" />
                                     </TouchableOpacity>
                                 ) : (
-                                    <TouchableOpacity onPress={() => handleCapture(setMotherFrontIdPhoto)}>
+                                    <TouchableOpacity onPress={() => !motherNoId && handleCapture(setMotherFrontIdPhoto)}>
                                         <Image source={motherFrontIdPhoto} style={styles.idPreview}/>
                                     </TouchableOpacity>
                                 )
@@ -150,11 +188,11 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                             <View>
                                 <Text style={styles.imageId}>Back ID</Text>
                                 {!motherBackIdPhoto ? (
-                                        <TouchableOpacity onPress={() => handleCapture(setMotherBackIdPhoto)}>
+                                        <TouchableOpacity onPress={() => !motherNoId && handleCapture(setMotherBackIdPhoto)}>
                                             <FontAwesome name='camera' size={35} color="#4A90E2" />
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPress={() => handleCapture(setMotherBackIdPhoto)}>
+                                        <TouchableOpacity onPress={() => !motherNoId && handleCapture(setMotherBackIdPhoto)}>
                                             <Image source={motherBackIdPhoto} style={styles.idPreview}/>
                                         </TouchableOpacity>
                                     ) 
@@ -162,8 +200,8 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                             </View>
                             <View>
                                 <Text style={styles.imageId}>No ID</Text>
-                                <TouchableOpacity>
-                                    <FontAwesome name='eye-slash' size={35} color="#4A90E2" />
+                                <TouchableOpacity onPress={() => setMotherNoId(!motherNoId)}>
+                                    <FontAwesome name={motherNoId ? 'check-circle-o' : 'circle-o'} size={35} color="#4A90E2" />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -176,6 +214,8 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                                 placeholder="0712022132"
                                 placeholderTextColor="lightgrey"
                                 keyboardType="phone-pad"
+                                value={applicantPhoneNumber}
+                                onChangeText={setApplicantPhoneNumber}
                             />
                         </View>
                     </View>
@@ -185,7 +225,7 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('FinalInfo')}>
+                <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
                     <Text style={styles.nextButtonText}>Next</Text>
                 </TouchableOpacity>
             </View>
