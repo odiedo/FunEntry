@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import api from './api';  // Ensure the path is correct
+import api from './api';  
 
 
 const SignupScreen = ({ navigation }) => {
