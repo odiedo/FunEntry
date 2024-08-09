@@ -98,6 +98,7 @@ const StudentScreen = ({ navigation }) => {
                                     onValueChange={(itemValue) => setSelectedGender(itemValue)}
                                     style={styles.input}
                                 >
+                                    <Picker.Item label='--- Select Gender ---' />
                                     <Picker.Item label="Male" value="male" />
                                     <Picker.Item label="Female" value="female" />
                                 </Picker>
@@ -123,6 +124,7 @@ const StudentScreen = ({ navigation }) => {
                                 onValueChange={(itemValue) => setSelectedLevel(itemValue)} 
                                 style={styles.input}
                                 >
+                                    <Picker.Item label='--- Select Level ---' />
                                     <Picker.Item label="Secondary" value="secondary" />
                                     <Picker.Item label="Tertiary" value="tertiary" />
                                 </Picker>
@@ -187,7 +189,7 @@ const StudentScreen = ({ navigation }) => {
                                     onValueChange={(itemValue) => setSelectedParentStatus(itemValue)}
                                     style={styles.input}
                                 >
-                                    <Picker.Item label='Select Parent Status' />
+                                    <Picker.Item label='--- Select Status ---' />
                                     <Picker.Item label='Needy' value="needy" />
                                     <Picker.Item label='Partial Orphan' value="partial_orphan" />
                                     <Picker.Item label='Total Orphan' value="total_orphan" />

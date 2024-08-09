@@ -39,8 +39,9 @@ class Attachment(db.Model):
     fee_structure = db.Column(db.String(200), nullable=True)
     result_slip = db.Column(db.String(200), nullable=True)
     birth_cert = db.Column(db.String(200), nullable=True)
+    disable_status = db.Column(db.String(100), nullable=True)
     disable_cert = db.Column(db.String(200), nullable=True)
-    birth_cert_no = db.Column(db.String(20), nullable=True)
+    birth_cert_no = db.Column(db.String(30), nullable=True)
     student = db.relationship('Student', back_populates='attachments')
 
 Student.parents = db.relationship('Parent', order_by=Parent.id, back_populates='student')

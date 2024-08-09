@@ -4,8 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
+from datetime import datetime
 from flask_migrate import Migrate
 from models import db, User, Student, Parent, Attachment
+
 
 def create_app():
     app = Flask(__name__)
@@ -55,62 +57,9 @@ def create_app():
             return jsonify({'name': user.name, 'email': user.email}), 200
         return jsonify({'message': 'User not found'}), 404
 
-    @app.route('/student', methods=['POST'])
-    @jwt_required()
-    def add_student():
-        data = request.get_json()
-        new_student = Student(
-            student_name=data['student_name'],
-            gender=data['gender'],
-            adm_no=data['adm_no'],
-            education_level=data['education_level'],
-            school=data['school'],
-            form_class=data['form_class'],
-            fee_balance=data['fee_balance'],
-            parent_status=data['parent_status']
-        )
-        db.session.add(new_student)
-        db.session.commit()
-        return jsonify({'message': 'Student added'}), 201
-        
-    @app.route('/parent', methods=['POST'])
-    @jwt_required()
-    def add_parent():
-        data = request.get_json()
-        new_parent = Parent(
-            student_id=data['student_id'],
-            father_name=data.get('father_name'),
-            father_id_number=data.get('father_id_number'),
-            father_front_id_photo=data.get('father_front_id_photo'),
-            father_back_id_photo=data.get('father_back_id_photo'),
-            mother_name=data['mother_name'],
-            mother_id_number=data['mother_id_number'],
-            mother_front_id_photo=data.get('mother_front_id_photo'),
-            mother_back_id_photo=data.get('mother_back_id_photo'),
-            applicant_phone_number=data['applicant_phone_number']
-        )
-        db.session.add(new_parent)
-        db.session.commit()
-        return jsonify({'message': 'Parent Added'}), 201
-    
-    @app.route('/attachment', methods=['POST'])
-    @jwt_required()
-    def add_attachment():
-        data = request.get_json()
-        new_attachment = Attachment(
-            student_id=data['student_id'],
-            fee_structure=data.get('fee_structure'),
-            result_slip=data.get('result_slip'),
-            birth_cert=data.get('birth_cert'),
-            disable_cert=data.get('disable_cert'),
-            birth_cert_no=data.get('birth_cert_no')
-        )
-        
-        db.session.add(new_attachment)
-        db.session.commit()
-        return jsonify({'message': 'Attachment added'}), 201
 
     @app.route('/submit', methods=['POST'])
+    @jwt_required()
     def submit():
         try:
             # Get form data
@@ -122,34 +71,42 @@ def create_app():
             formClass = request.form.get('formClass')
             feeBalance = request.form.get('feeBalance')
             selectedParentStatus = request.form.get('selectedParentStatus')
-            fatherNoId = request.form.get('fatherNoId')
-            motherNoId = request.form.get('motherNoId')
             fatherName = request.form.get('fatherName')
             fatherIdNumber = request.form.get('fatherIdNumber')
             motherName = request.form.get('motherName')
             motherIdNumber = request.form.get('motherIdNumber')
             applicantPhoneNumber = request.form.get('applicantPhoneNumber')
+            feeStructure = request.form.get('feeStructure')
+            resultSlip = request.form.get('resultSlip')
+            birthCert = request.form.get('birthCert')
+            disableCert = request.form.get('disableCert')
+            selectedStatus = request.form.get('selectedStatus')
+            birthCertNo = request.form.get('birthCertNo')
+
+            # Validate fee balance
+            try:
+                feeBalance = float(feeBalance) if feeBalance else None
+            except ValueError:
+                return jsonify({'message': 'Invalid fee balance value'}), 400
 
             # Handle file uploads
-            fatherFrontIdPhoto = request.files.get('fatherFrontIdPhoto')
-            fatherBackIdPhoto = request.files.get('fatherBackIdPhoto')
-            motherFrontIdPhoto = request.files.get('motherFrontIdPhoto')
-            motherBackIdPhoto = request.files.get('motherBackIdPhoto')
+            def save_file(file, prefix):
+                if file:
+                    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                    filename = f"{prefix}_{timestamp}.png"
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    return filename
+                return None
 
-            fatherFrontIdPhoto_filename = secure_filename(fatherFrontIdPhoto.filename) if fatherFrontIdPhoto else None
-            fatherBackIdPhoto_filename = secure_filename(fatherBackIdPhoto.filename) if fatherBackIdPhoto else None
-            motherFrontIdPhoto_filename = secure_filename(motherFrontIdPhoto.filename) if motherFrontIdPhoto else None
-            motherBackIdPhoto_filename = secure_filename(motherBackIdPhoto.filename) if motherBackIdPhoto else None
+            fatherFrontIdPhoto_filename = save_file(request.files.get('fatherFrontIdPhoto'), prefix=f"{fatherIdNumber}_frnt")
+            fatherBackIdPhoto_filename = save_file(request.files.get('fatherBackIdPhoto'), prefix=f"{fatherIdNumber}_back")
+            motherFrontIdPhoto_filename = save_file(request.files.get('motherFrontIdPhoto'), prefix=f"{motherIdNumber}_frnt")
+            motherBackIdPhoto_filename = save_file(request.files.get('motherBackIdPhoto'), prefix=f"{motherIdNumber}_back")
+            disableCertPhoto_filename = save_file(request.files.get('disableCert'), prefix=f"{studentName}_disable")
+            feeStructurePhoto_filename = save_file(request.files.get('feeStructure'), prefix=f"{studentName}_fee")
+            resultSlipPhoto_filename = save_file(request.files.get('resultSlip'), prefix=f"{studentName}_result_slip")
+            birthCert_filename = save_file(request.files.get('birthCert'), prefix=f"{birthCertNo}_birth")
 
-            # Save files
-            if fatherFrontIdPhoto:
-                fatherFrontIdPhoto.save(os.path.join(app.config['UPLOAD_FOLDER'], fatherFrontIdPhoto_filename))
-            if fatherBackIdPhoto:
-                fatherBackIdPhoto.save(os.path.join(app.config['UPLOAD_FOLDER'], fatherBackIdPhoto_filename))
-            if motherFrontIdPhoto:
-                motherFrontIdPhoto.save(os.path.join(app.config['UPLOAD_FOLDER'], motherFrontIdPhoto_filename))
-            if motherBackIdPhoto:
-                motherBackIdPhoto.save(os.path.join(app.config['UPLOAD_FOLDER'], motherBackIdPhoto_filename))
 
             # Create new student
             new_student = Student(
@@ -180,7 +137,20 @@ def create_app():
             )
             db.session.add(new_parent)
             db.session.commit()
-
+            
+            # Create new attachment
+            new_attachment = Attachment(
+                student_id=new_student.id,
+                fee_structure=feeStructurePhoto_filename,
+                result_slip=resultSlipPhoto_filename,
+                birth_cert=birthCert_filename,
+                disable_status=selectedStatus,
+                disable_cert=disableCertPhoto_filename,
+                birth_cert_no=birthCertNo,
+            )
+            db.session.add(new_attachment)
+            db.session.commit()
+            
             return jsonify({'message': 'Data submitted successfully'}), 201
 
         except Exception as e:

@@ -4,6 +4,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
+import { getToken } from '../utils/auth';
+
 const FinalInfoScreen = ({ route, navigation }) => {
 
     const { studentName, admNo, selectedGender, selectedLevel, inputSchool, formClass, feeBalance, selectedParentStatus, fatherName, fatherIdNumber, fatherFrontIdPhoto, fatherBackIdPhoto, fatherNoId, motherName, motherIdNumber, motherFrontIdPhoto, motherBackIdPhoto, motherNoId, applicantPhoneNumber } = route.params
@@ -75,14 +77,57 @@ const FinalInfoScreen = ({ route, navigation }) => {
         formData.append('motherIdNumber', motherIdNumber);
         formData.append('applicantPhoneNumber', applicantPhoneNumber);
     
+        if (feeStructure) {
+            formData.append('feeStructure', {
+                uri: feeStructure.uri,
+                name: 'feeStructure.jpg',
+                type: 'image/jpeg'
+            });
+        }
+    
+        if (resultSlip) {
+            formData.append('resultSlip', {
+                uri: resultSlip.uri,
+                name: 'resultSlip.jpg',
+                type: 'image/jpeg'
+            });
+        }
+    
+        if (birthCert) {
+            formData.append('birthCert', {
+                uri: birthCert.uri,
+                name: 'birthCert.jpg',
+                type: 'image/jpeg'
+            });
+        }
+    
+        if (disableCert) {
+            formData.append('disableCert', {
+                uri: disableCert.uri,
+                name: 'disableCert.jpg',
+                type: 'image/jpeg'
+            });
+        }
+    
+        formData.append('birthCertNo', birthCertNo);
+        formData.append('selectedStatus', selectedStatus);
+        formData.append('noBirthCert', noBirthCert);
+        formData.append('noTranscript', noTranscript);
+        formData.append('noFeeStructure', noFeeStructure);
+
         try {
+            const token = await getToken();
+            
             const response = await fetch('http://192.168.100.16:5000/submit', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
                 body: formData
             });
             if (response.ok) {
                 alert('Form submitted successfully!');
-                navigation.navigate('Home');
+                // navigation.navigate('Home');
             } else {
                 alert('Failed to submit the form. Please try again.');
             }
@@ -112,13 +157,15 @@ const FinalInfoScreen = ({ route, navigation }) => {
                                 onValueChange={(itemValue) => setSelectedStatus(itemValue)}
                                 style={styles.input}
                             >
-                                <Picker.Item label='No' value="no" />
+                                <Picker.Item label='--- Select Disability Status ---' />
+                                <Picker.Item label='No' value="no"/>
                                 <Picker.Item label='Yes' value="yes" />
                             </Picker>
                         </View>
                         {selectedStatus === 'yes' && (
                             <View style={styles.fieldset}>
                                 <Text style={styles.legendAtt}>Disability Certiicate</Text>
+                                <Text style={styles.legendAtt}>Disability cert number</Text>
                                 <View style={styles.conditionAtt}>
                                     {!disableCert ? (
                                             <TouchableOpacity onPress={() => handleCapture(setDisableCert)}>
@@ -209,7 +256,7 @@ const FinalInfoScreen = ({ route, navigation }) => {
                             </View>
                             <View>
                                 <Text style={styles.imageId}>No results</Text>
-                                <TouchableOpacity onPress={() => setNoTranscript(!noTrascript)}>
+                                <TouchableOpacity onPress={() => setNoTranscript(!noTranscript)}>
                                     <FontAwesome name={noTranscript ? 'check-circle-o' : 'circle-o'} size={35} color="#4A90E2" />
                                 </TouchableOpacity>
                             </View>
