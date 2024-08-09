@@ -41,7 +41,7 @@ const HomeScreen = ({ navigation }) => {
         const token = await getToken();
         const response = await axios.get('http://192.168.100.16:5000/user', {
           headers: {
-            Authorization: `Bearer ${token}`, 
+            'Authorization': `Bearer ${token}`, 
           },
         });
         setUsername(response.data.name);
