@@ -4,8 +4,29 @@ import { FontAwesome } from '@expo/vector-icons';
 import axios from 'axios';
 import { getToken } from '../utils/auth';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = ({ navigation }) => {
+
+  const [summaryData, setSummaryData] = useState ({
+    tertiary: 0,
+    secondary: 0,
+    singleParents: 0,
+    partialOrphans: 0,
+    totalOrphans: 0,
+    pwds: 0,
+  });
+  useEffect(() => {
+    const fetchSummaryData = async () => {
+      const data = await AsyncStorage.getItem('summaryData');
+      if (data) {
+        setSummaryData(JSON.parse(data))
+      }
+    };
+
+    fetchSummaryData();
+  }, []);
+
   const [username, setUsername] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [locationData, setLocationData] = useState({
@@ -95,23 +116,27 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.statisticsCard}>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Tertiary Sch:</Text>
-          <Text style={styles.statValue}>39</Text>
+          <Text style={styles.statValue}>{summaryData.tertiary}</Text>
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Secondary Sch:</Text>
-          <Text style={styles.statValue}>100</Text>
+          <Text style={styles.statValue}>{summaryData.secondary}</Text>
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Single Parents:</Text>
-          <Text style={styles.statValue}>10</Text>
+          <Text style={styles.statValue}>{summaryData.singleParents}</Text>
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Partial Orphans:</Text>
-          <Text style={styles.statValue}>4</Text>
+          <Text style={styles.statValue}>{summaryData.partialOrphans}</Text>
         </View>
         <View style={styles.statRow}>
           <Text style={styles.statLabel}>Total Orphans:</Text>
-          <Text style={styles.statValue}>9</Text>
+          <Text style={styles.statValue}>{summaryData.totalOrphans}</Text>
+        </View>
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>PWDs:</Text>
+          <Text style={styles.statValue}>{summaryData.pwds}</Text>
         </View>
         <View style={styles.bigStatVal}>
           <Text style={styles.bigStatValue}>3000</Text>

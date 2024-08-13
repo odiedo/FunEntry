@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
-import axios from 'axios';
 import { getToken } from '../utils/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const FinalInfoScreen = ({ route, navigation }) => {
 
@@ -18,6 +19,10 @@ const FinalInfoScreen = ({ route, navigation }) => {
     const [noBirthCert, setNoBirthCert] = useState(false);
     const [noTranscript, setNoTranscript] = useState(false);
     const [noFeeStructure, setNoFeeStructure] = useState(false);
+    useEffect(() =>{
+        initializeSummaryData();
+    }, []);
+
     const handleCapture = async (setImage) => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
@@ -49,16 +54,21 @@ const FinalInfoScreen = ({ route, navigation }) => {
         formData.append('formClass', formClass);
         formData.append('feeBalance', feeBalance);
         formData.append('selectedParentStatus', selectedParentStatus);
-        formData.append('fatherFrontIdPhoto', {
-            uri: fatherFrontIdPhoto.uri,
-            name: 'fatherFrontIdPhoto.jpg',
-            type: 'image/jpeg'
-        });
-        formData.append('fatherBackIdPhoto', {
-            uri: fatherBackIdPhoto.uri,
-            name: 'fatherBackIdPhoto.jpg',
-            type: 'image/jpeg'
-        });
+        if (fatherFrontIdPhoto && fatherFrontIdPhoto.uri) {
+            formData.append('fatherFrontIdPhoto', {
+                uri: fatherFrontIdPhoto.uri,
+                name: 'fatherFrontIdPhoto.jpg',
+                type: 'image/jpeg',
+            });
+        }
+    
+        if (fatherBackIdPhoto && fatherBackIdPhoto.uri) {
+            formData.append('fatherBackIdPhoto', {
+                uri: fatherBackIdPhoto.uri,
+                name: 'fatherBackIdPhoto.jpg',
+                type: 'image/jpeg',
+            });
+        }
         formData.append('motherFrontIdPhoto', {
             uri: motherFrontIdPhoto.uri,
             name: 'motherFrontIdPhoto.jpg',
@@ -126,6 +136,7 @@ const FinalInfoScreen = ({ route, navigation }) => {
                 body: formData
             });
             if (response.ok) {
+                await updateSummaryData(selectedLevel, selectedParentStatus, selectedStatus);
                 alert('Form submitted successfully!');
                 // navigation.navigate('Home');
             } else {
@@ -135,6 +146,46 @@ const FinalInfoScreen = ({ route, navigation }) => {
             alert('An error occurred. Please try again.');
         }
     };
+    
+
+            // data entry summary initialization
+    const initializeSummaryData = async () => {
+        const initialData = {
+            tertiary: 0,
+            secondary: 0,
+            singleParents: 0,
+            partialOrphans: 0,
+            totalOrphans: 0,
+            pwds: 0,
+        };
+        await AsyncStorage.setItem('summaryData', JSON.stringify(initialData));
+    };
+
+    const updateSummaryData = async (selectedLevel, selectedParentStatus, selectedStatus) => {
+        const data = await AsyncStorage.getItem('summaryData');
+        let summaryData = JSON.parse(data);
+
+        if (selectedLevel === 'tertiary') {
+            summaryData.tertiary += 1;
+        } else if (selectedLevel === 'secondary') {
+            summaryData.secondary += 1;
+        }
+        
+        if (selectedParentStatus === 'single_parent') {
+            summaryData.singleParents += 1;
+        } else if (selectedParentStatus === 'partial_orphan') {
+            summaryData.partialOrphans += 1;
+        } else if (selectedParentStatus === 'total_orphans') {
+            summaryData.totalOrphans += 1;
+        }
+
+        if (selectedStatus === 'yes') {
+            summaryData.pwds += 1;
+        }
+        await AsyncStorage.setItem('summaryData', JSON.stringify(summaryData))
+        
+    };
+
     
     return (
         <KeyboardAvoidingView
@@ -157,7 +208,7 @@ const FinalInfoScreen = ({ route, navigation }) => {
                                 onValueChange={(itemValue) => setSelectedStatus(itemValue)}
                                 style={styles.input}
                             >
-                                <Picker.Item label='--- Select Disability Status ---' />
+                                <Picker.Item label='--- Select Disability Status ---' value="" />
                                 <Picker.Item label='No' value="no"/>
                                 <Picker.Item label='Yes' value="yes" />
                             </Picker>
@@ -211,7 +262,7 @@ const FinalInfoScreen = ({ route, navigation }) => {
                             <View>
                                 <Text style={styles.imageId}>No certificate</Text>
                                 <TouchableOpacity onPress={() => setNoBirthCert(!noBirthCert)}>
-                                    <FontAwesome name={noBirthCert ? 'check-circle' : 'circle-o'} size={35} color="#4A90E2" />
+                                    <FontAwesome name={noBirthCert ? 'check-circle-o' : 'circle-o'} size={35} color="#4A90E2" />
                                 </TouchableOpacity>
                             </View>
                         </View>
