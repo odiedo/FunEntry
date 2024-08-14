@@ -209,9 +209,14 @@ const HomeScreen = ({ navigation }) => {
                 <Picker.Item key={index} label={subLoc} value={subLoc} />
               ))}
             </Picker>
-
-            <Button title="Save" onPress={handleSaveLocation} />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} />
+            <View style={styles.modalFooter}>
+              <TouchableOpacity style={styles.footerBtnC} onPress={() => setModalVisible(false)}>
+                <Text style={styles.btnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.footerBtnS} onPress={handleSaveLocation}>
+                <Text style={styles.btnText}>Save</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -359,7 +364,37 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 10,
   },
-
+  modalFooter: {
+    padding: 20,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#f1f1f1',
+    borderTopWidth: 1,
+    borderColor: '#ddd',
+    marginRight: 10,
+  },
+  footerBtnC: {
+    flex: 1,
+    marginLeft: 10,
+    backgroundColor: '#200',
+    borderRadius: 8,
+    paddingVertical: 10,
+    width: '50%',
+  },
+  footerBtnS: {
+    flex: 1,
+    marginLeft: 10,
+    backgroundColor: '#4A90E2',
+    borderRadius: 8,
+    paddingVertical: 10,
+    width: '50%',
+  },
+  btnText: {
+    color: '#ffffff',
+    fontSize: 16,
+    textAlign: 'center',
+  },
 });
 
 export default HomeScreen;

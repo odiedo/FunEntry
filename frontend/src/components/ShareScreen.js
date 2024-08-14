@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Button, Alert, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert, Text } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { getToken } from '../utils/auth';
 import LoadingAnimation from './LoadingAnimation';
 
@@ -37,11 +38,39 @@ const ShareScreen = ({navigation}) => {
   }
 
   return (
-    <View style={{ margin: 20 }}>
-      <Text>Press the button to share data:</Text>
-      <Button title="Share Data" onPress={shareData} />
+    <View style={styles.container}>
+      <View style={styles.shareBox}>
+        <TouchableOpacity style={styles.shareButton} onPress={shareData}>
+          <FontAwesome name='cloud-upload' size={60} color="#4A90E2" />
+          <Text style={styles.shareText}>Share Data</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  shareBox: {
+    paddingVertical: '80%',
+    alignItems: 'center',
+  },
+  shareButton: {
+    width: 150,
+    paddingVertical: 40,
+    backgroundColor: '#0000',
+    alignItems: 'center',
+    
+  },
+  shareText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#000',
+    fontWeight: 'bold',
+  },
+});
 
 export default ShareScreen;
