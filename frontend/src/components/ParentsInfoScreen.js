@@ -38,6 +38,13 @@ const ParentsInfoScreen = ({ route, navigation }) => {
     };
 
     const handleNext = () => {
+
+        if (selectedParentStatus === 'single_mother') {
+            setFatherName('N/A');
+            setFatherIdNumber('0')
+            setFrontFatherIdPhoto(null)
+            setBackFatherIdPhoto(null)
+        }
         navigation.navigate('FinalInfo', {
             studentName,
             admNo,
@@ -170,7 +177,7 @@ const ParentsInfoScreen = ({ route, navigation }) => {
                         </View>
                     </View>
                     <View style={styles.fieldsetPhoto}>
-                        <Text style={styles.legend}>Father ID Photo</Text>
+                        <Text style={styles.legend}>Mother ID Photo</Text>
                         <View style={styles.inputContainerPhoto}>
                             <View>
                                 <Text style={styles.imageId}>Front ID</Text>
