@@ -10,6 +10,8 @@ import StudentScreen from './src/components/StudentScreen';
 import ParentsInfoScreen from './src/components/ParentsInfoScreen';
 import FinalInfoScreen from './src/components/FinalInfoScreen';
 import CompleteScreen from './src/components/CompleteScreen';
+import ShareScreen from './src/components/ShareScreen';
+import LoadingAnimation from './src/components/LoadingAnimation';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +33,9 @@ export default function App() {
               <Stack.Screen name="ParentsInfo" component={ParentsInfoScreen} options={{ headerShown: false }}/>
               <Stack.Screen name="FinalInfo" component={FinalInfoScreen} options={{ headerShown: false }} />
               <Stack.Screen name="Complete" component={CompleteScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Share" component={ShareScreen} options={{headerShown: false}} />
+              <Stack.Screen name="Load" component={LoadingAnimation} options={{headerShown: false}} />
+              
             </Stack.Navigator>
         </NavigationContainer>
     </>

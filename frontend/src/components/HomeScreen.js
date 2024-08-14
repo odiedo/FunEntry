@@ -168,7 +168,7 @@ const HomeScreen = ({ navigation }) => {
 
       {/* Footer Navigation Bar */}
       <View style={styles.footer}>
-        <FontAwesome name='cog' size={24} color='#000' />
+        <TouchableOpacity onPress={() => navigation.navigate('Share')}><FontAwesome name='upload' size={24} color='#000' /></TouchableOpacity>
         <FontAwesome name='bell' size={24} color='#000' />
         <FontAwesome name='trash' size={24} color='#000' />
         <FontAwesome name='clock-o' size={24} color='#000' />

@@ -3,11 +3,15 @@ from flask import Flask, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from datetime import timedelta
-from datetime import datetime
+from datetime import timedelta, datetime
 from flask_migrate import Migrate
 from models import db, User, Student, Parent, Attachment
-
+import zipfile
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
 
 def create_app():
     app = Flask(__name__)
@@ -167,6 +171,75 @@ def create_app():
     @jwt_required()
     def logout():
         return jsonify({"message": "Logout successful"}), 200
+    
+    # Integrating the share data feature
+    @app.route('/api/share-data', methods=['POST'])
+    @jwt_required()
+    def share_data():
+        try:
+            # Zip the Data
+            zip_file = zip_data()
+            # Send the Email
+            send_email(zip_file)
+
+            return jsonify({"message": "Data shared successfully!"}), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    def zip_data():
+        # Define paths
+        database_path = 'instance/database.db'
+        output_zip_file = 'app_data.zip'
+
+        # Create a ZIP file
+        with zipfile.ZipFile(output_zip_file, 'w') as zipf:
+            zipf.write(database_path, os.path.basename(database_path))
+            return output_zip_file
+
+    def send_email(zip_file):
+        # Email details
+        sender_email = "odiedopaul@gmail.com"
+        receiver_email = "odiedopaul@gmail.com"
+        subject = "Bursary Clerks Data Share"
+        body = "Please find the attached entry data for your action."
+
+        # multipart message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = receiver_email
+        msg['Subject'] = subject
+
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Open the file in binary mode
+        with open(zip_file, "rb") as attachment:
+            # Instance of MIMEBase and named as p
+            part = MIMEBase('application', 'octet-stream')
+
+            # To change the payload into encoded form
+            part.set_payload(attachment.read())
+
+            # Encode into base64
+            encoders.encode_base64(part)
+
+            # Add header with the pdf name
+            part.add_header('Content-Disposition', f"attachment; filename= {zip_file}")
+
+            # Attach the instance 'p' to instance 'msg'
+            msg.attach(part)
+
+        # SMTP server configuration
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        smtp_username = "odiedopaul@gmail.com"
+        smtp_password = "oeor ibwd ewpn erqq"
+
+        # Sending the email
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.sendmail(sender_email, receiver_email, msg.as_string())
 
     return app
 
